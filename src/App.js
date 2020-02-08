@@ -6,8 +6,8 @@ import "./App.css";
 import Book from "./Book";
 
 class BooksApp extends React.Component {
-  constructor(props){
-    super(props)
+  constructor(props) {
+    super(props);
     this.change = this.change.bind(this);
   }
   state = {
@@ -15,22 +15,25 @@ class BooksApp extends React.Component {
     showSearchPage: false
   };
   componentDidMount() {
+    // get the books on load
     BooksAPI.getAll().then(books =>
       this.setState({
-        books:books
+        books: books
       })
     );
   }
+
+  // update a shelf of existant book or add a new one
   change = (modifiedBook, e) => {
     const value = e.target.value;
-    modifiedBook.shelf=value
-    BooksAPI.update(modifiedBook, value)
-      .then(response => {
-        this.setState(oldState => ({
-          books: oldState.books.filter(book=> book.id!== modifiedBook.id).concat(modifiedBook)
-        }))
-      })
-      .catch(e => console.log("error" + e));
+    modifiedBook.shelf = value;
+    BooksAPI.update(modifiedBook, value).then(response => {
+      this.setState(oldState => ({
+        books: oldState.books
+          .filter(book => book.id !== modifiedBook.id)
+          .concat(modifiedBook)
+      }));
+    });
   };
 
   render() {
@@ -40,7 +43,7 @@ class BooksApp extends React.Component {
           <Route
             path="/search"
             render={() => (
-              <Search books={this.state.books} change={this.change}/>
+              <Search books={this.state.books} change={this.change} />
             )}
           />
           <Route
@@ -61,7 +64,8 @@ class BooksApp extends React.Component {
                             book =>
                               book.shelf === "currentlyReading" && (
                                 <Book
-                                  book={book} books={this.state.books}
+                                  book={book}
+                                  books={this.state.books}
                                   key={book.id}
                                   change_it={this.change}
                                 />
@@ -78,8 +82,9 @@ class BooksApp extends React.Component {
                             book =>
                               book.shelf === "wantToRead" && (
                                 <Book
-                                book={book} books={this.state.books}
-                                key={book.id}
+                                  book={book}
+                                  books={this.state.books}
+                                  key={book.id}
                                   change_it={this.change}
                                 />
                               )
@@ -95,8 +100,9 @@ class BooksApp extends React.Component {
                             book =>
                               book.shelf === "read" && (
                                 <Book
-                                book={book} books={this.state.books}
-                                key={book.id}
+                                  book={book}
+                                  books={this.state.books}
+                                  key={book.id}
                                   change_it={this.change}
                                 />
                               )
